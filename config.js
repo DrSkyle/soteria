@@ -10,6 +10,6 @@
   DVL.config = Object.freeze({
     supportUrl: "https://www.patreon.com/cw/DrSkyle/membership",
     sourceUrl: "https://github.com/DrSkyle/soteria",
-    partnerUrl: "",
+    partnerUrl: "https://drskyle.github.io/soteria/partner.html",
   });
 })(typeof globalThis !== "undefined" ? globalThis : this);

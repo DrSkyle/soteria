@@ -578,7 +578,8 @@ const guardPartner = async () => (S.partner && S.partnerOnlyQuiet ? requireAppro
 
 function renderPartner() {
   $("#guard-ext").checked = !!S.guardExtensions;
-  $("#language").value = S.language || "auto";
+  const lang = S.language || "auto";
+  $("#language").value = lang === "pt_BR" ? "pt" : lang === "zh_CN" ? "zh" : lang;
   $("#owner-name").value = S.ownerName || "";
   const has = !!S.partner;
   $("#partner-setup").hidden = has;

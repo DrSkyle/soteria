@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Soteria — partner page</title>
+<style>
+  :root {
+    --bg: #f6f4ef; --surface: #fffdf8; --text: #1b1a17; --muted: #6b675e;
+    --line: #e2ddd2; --accent: #1b1a17; --fill: rgba(0,0,0,.05);
+    --ok: #1f7a4d; --err: #b42318;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#141311; --surface:#1e1c19; --text:#f2efe9; --muted:#a29d92; --line:#33302b; --accent:#f2efe9; --fill:rgba(255,255,255,.07); --ok:#6ee7a8; --err:#ff9b93; }
+  }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; }
+  .wrap { max-width: 680px; margin: 0 auto; padding: 40px 20px 72px; }
+  header { display:flex; gap:14px; align-items:center; margin-bottom: 8px; }
+  header img { width:56px; height:56px; border-radius:14px; }
+  h1 { font-size: 26px; margin:0; letter-spacing:-.02em; }
+  .sub { color:var(--muted); margin: 6px 0 28px; }
+  section { background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:20px; margin:0 0 16px; }
+  h2 { font-size:16px; margin:0 0 4px; }
+  p.note { color:var(--muted); font-size:14px; margin:0 0 14px; }
+  label { display:block; font-size:13px; font-weight:600; margin:14px 0 6px; }
+  textarea, input[type=file] { width:100%; }
+  textarea { min-height:84px; resize:vertical; padding:10px 12px; border:1px solid var(--line); border-radius:10px; background:var(--bg); color:var(--text); font:13.5px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; word-break:break-all; }
+  button { font:inherit; padding:9px 16px; border-radius:10px; border:1px solid var(--line); background:var(--surface); color:var(--text); cursor:pointer; }
+  button:hover { background:var(--fill); }
+  button.primary { background:var(--accent); color:var(--bg); border-color:var(--accent); font-weight:600; }
+  button:disabled { opacity:.5; cursor:not-allowed; }
+  .row { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:12px; }
+  .msg { font-size:14px; margin:10px 0 0; min-height:1.2em; }
+  .msg.ok { color:var(--ok); } .msg.err { color:var(--err); }
+  .out { margin-top:14px; padding:12px 14px; border:1px dashed var(--line); border-radius:10px; background:var(--bg); font:13.5px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; word-break:break-all; white-space:pre-wrap; }
+  .kv { display:grid; grid-template-columns:auto 1fr; gap:4px 16px; margin-top:12px; font-size:14px; }
+  .kv b { color:var(--muted); font-weight:600; }
+  .hidden { display:none; }
+  footer { color:var(--muted); font-size:13px; text-align:center; margin-top:28px; }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <header>
+    <img src="icons/icon-128.png" alt="">
+    <div>
+      <h1>Soteria partner</h1>
+      <div class="sub">Approve unlocks for someone you trust. Works offline; nothing is sent anywhere.</div>
+    </div>
+  </header>
+
+  <section>
+    <h2>Your partner key</h2>
+    <p class="note">Create a key here. Your private key stays in this browser, on this device. Back it up somewhere safe: without it you cannot approve requests.</p>
+    <div class="row">
+      <button class="primary" id="make">Create my partner code</button>
+      <button id="backup" disabled>Back up key</button>
+      <label for="restore" style="margin:0;font-weight:400">Restore: <input type="file" id="restore" accept="application/json" style="width:auto;display:inline-block"></label>
+    </div>
+    <p class="msg" id="keyMsg" role="status" aria-live="polite"></p>
+    <div id="keyBox" class="hidden">
+      <div class="kv"><b>Your public code</b><span>Send this to the person using Soteria.</span></div>
+      <div class="out" id="pubcode" aria-label="Your public partner code"></div>
+      <div class="row"><button id="copyPub">Copy public code</button><span class="msg" id="pubMsg"></span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Approve a request</h2>
+    <p class="note">They send you a code that starts with <code>SOTERIAREQ1.</code>. Paste it, check what it asks for, then send back the reply.</p>
+    <label for="req">Request from Soteria</label>
+    <textarea id="req" spellcheck="false" placeholder="SOTERIAREQ1..."></textarea>
+    <div class="row">
+      <button id="read">Read request</button>
+      <button class="primary" id="approve" disabled>Approve and make reply</button>
+    </div>
+    <div class="kv hidden" id="reqInfo"></div>
+    <p class="msg" id="reqMsg" role="status" aria-live="polite"></p>
+    <div id="replyBox" class="hidden">
+      <div class="out" id="reply" aria-label="Your reply code"></div>
+      <div class="row"><button id="copyReply">Copy reply</button><span class="msg" id="replyMsg"></span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Read a weekly check-in</h2>
+    <p class="note">They may send a code that starts with <code>SOTERIAWEEK1.</code>. It contains only their totals, nothing about which sites.</p>
+    <label for="checkin">Weekly check-in</label>
+    <textarea id="checkin" spellcheck="false" placeholder="SOTERIAWEEK1..."></textarea>
+    <div class="row"><button id="readWeek">Read check-in</button></div>
+    <div class="kv hidden" id="weekInfo"></div>
+    <p class="msg" id="weekMsg" role="status" aria-live="polite"></p>
+  </section>
+
+  <footer>No account, no server, no tracking. This page makes no network requests.</footer>
+</main>
+
+<script src="partner.js"></script>
+<script>
+(function () {
+  "use strict";
+  const DVL = globalThis.DevilabsSoteria;
+  const P = DVL && DVL.partner;
+  const $ = (id) => document.getElementById(id);
+  const KEY = "soteria.partner.key";
+  let key = null;
+
+  function say(el, text, kind) {
+    el.textContent = text || "";
+    el.className = "msg" + (kind ? " " + kind : "");
+  }
+  async function copy(text, msgEl) {
+    try {
+      await navigator.clipboard.writeText(text);
+      say(msgEl, "Copied", "ok");
+    } catch (e) {
+      say(msgEl, "Select the code and copy it manually.", "err");
+    }
+    setTimeout(() => say(msgEl, ""), 1800);
+  }
+  function load() {
+    try {
+      const raw = localStorage.getItem(KEY);
+      if (raw) key = JSON.parse(raw);
+    } catch (e) {
+      key = null;
+    }
+    renderKey();
+  }
+  function renderKey() {
+    const has = !!(key && key.publicCode && key.privateJwk);
+    $("backup").disabled = !has;
+    $("keyBox").classList.toggle("hidden", !has);
+    if (has) $("pubcode").textContent = key.publicCode;
+    $("approve").disabled = !has;
+  }
+  function parseRequest(text) {
+    const r = P.parseRequest(text);
+    if (!r.ok) return null;
+    return r;
+  }
+  function renderRequest(r) {
+    const box = $("reqInfo");
+    box.textContent = "";
+    if (!r) { box.classList.add("hidden"); return; }
+    box.classList.remove("hidden");
+    const rows = [
+      ["Site / action", r.site],
+      ["For", r.minutes ? r.minutes + " minutes" : "no time limit on the grant"],
+    ];
+    for (const [k, v] of rows) {
+      const b = document.createElement("b"); b.textContent = k;
+      const s = document.createElement("span"); s.textContent = v;
+      box.append(b, s);
+    }
+  }
+
+  if (!P || !globalThis.crypto || !globalThis.crypto.subtle) {
+    say($("keyMsg"), "This browser can't run the key code here. Open this page over https:// instead of a local file.", "err");
+    return;
+  }
+
+  $("make").addEventListener("click", async () => {
+    $("make").disabled = true;
+    try {
+      const kp = await P.generateKeyPair();
+      key = { publicCode: kp.publicCode, privateJwk: kp.privateJwk, created: Date.now() };
+      localStorage.setItem(KEY, JSON.stringify(key));
+      renderKey();
+      say($("keyMsg"), "Key created. Save your public code and back up the private key.", "ok");
+    } catch (e) {
+      say($("keyMsg"), "Could not create a key in this browser.", "err");
+    }
+    $("make").disabled = false;
+  });
+
+  $("copyPub").addEventListener("click", () => copy(key ? key.publicCode : "", $("pubMsg")));
+
+  $("backup").addEventListener("click", () => {
+    if (!key) return;
+    const blob = new Blob([JSON.stringify(key, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "soteria-partner-key.json";
+    document.body.append(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+    say($("keyMsg"), "Backup downloaded. Keep it somewhere safe.", "ok");
+  });
+
+  $("restore").addEventListener("change", async (e) => {
+    const f = e.target.files && e.target.files[0];
+    if (!f) return;
+    try {
+      const data = JSON.parse(await f.text());
+      const ok = data && typeof data.publicCode === "string" && data.privateJwk && (await P.checkPublicCode(data.publicCode));
+      if (!ok) throw new Error("bad key");
+      key = { publicCode: data.publicCode, privateJwk: data.privateJwk, created: data.created || Date.now() };
+      localStorage.setItem(KEY, JSON.stringify(key));
+      renderKey();
+      say($("keyMsg"), "Key restored.", "ok");
+    } catch (err) {
+      say($("keyMsg"), "That file isn't a Soteria partner key.", "err");
+    }
+    e.target.value = "";
+  });
+
+  $("read").addEventListener("click", () => {
+    say($("reqMsg"), "");
+    $("replyBox").classList.add("hidden");
+    const r = parseRequest($("req").value);
+    if (!r) {
+      renderRequest(null);
+      $("approve").disabled = true;
+      return say($("reqMsg"), "That doesn't look like a Soteria request.", "err");
+    }
+    renderRequest(r);
+    $("approve").disabled = !key;
+    say($("reqMsg"), key ? "Check it, then approve." : "Create or restore your key first.", key ? "ok" : "err");
+  });
+
+  $("approve").addEventListener("click", async () => {
+    if (!key) return say($("reqMsg"), "Create or restore your key first.", "err");
+    const text = $("req").value.trim();
+    const r = parseRequest(text);
+    if (!r) return say($("reqMsg"), "That doesn't look like a Soteria request.", "err");
+    try {
+      const reply = await P.sign(key.privateJwk, text);
+      $("reply").textContent = reply;
+      $("replyBox").classList.remove("hidden");
+      say($("reqMsg"), "Approved. Send them the reply code.", "ok");
+    } catch (e) {
+      say($("reqMsg"), "Could not sign that request with this key.", "err");
+    }
+  });
+
+  $("copyReply").addEventListener("click", () => copy($("reply").textContent, $("replyMsg")));
+
+  $("readWeek").addEventListener("click", () => {
+    const box = $("weekInfo");
+    box.textContent = "";
+    box.classList.add("hidden");
+    say($("weekMsg"), "");
+    const r = P.parseCheckin($("checkin").value);
+    if (!r.ok) return say($("weekMsg"), r.error === "damaged" ? "That code looks damaged. Ask them to copy it again." : "That doesn't look like a Soteria check-in.", "err");
+    box.classList.remove("hidden");
+    const rows = [
+      ["From", r.name || "Soteria user"],
+      ["Week of", r.week],
+      ["Lock screens", String(r.tries)],
+      ["Walked away", String(r.walked)],
+      ["Unlocked", String(r.unlocked)],
+      ["Clean days", r.clean + " of " + r.active],
+      ["They say", r.tone],
+    ];
+    for (const [k, v] of rows) {
+      const b = document.createElement("b"); b.textContent = k;
+      const s = document.createElement("span"); s.textContent = v;
+      box.append(b, s);
+    }
+    say($("weekMsg"), "Self-reported totals, not proof.", "ok");
+  });
+
+  load();
+})();
+</script>
+</body>
+</html>

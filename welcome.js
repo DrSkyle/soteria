@@ -9,6 +9,10 @@ const $ = (id) => document.getElementById(id);
 const t = (key, vars) => DVL.i18n.t(key, vars);
 
 const ORDER = ["welcome", "password", "choose", "done"];
+const LANGS = [
+  ["en", "English"], ["es", "Español"], ["fr", "Français"], ["de", "Deutsch"],
+  ["it", "Italiano"], ["pt", "Português"], ["ja", "日本語"], ["zh", "中文"], ["ar", "العربية"],
+];
 const picked = new Set(); // collection ids
 const custom = []; // extra hosts typed by hand
 let S = null;
@@ -61,6 +65,32 @@ $("pw-form").addEventListener("submit", async (e) => {
 });
 
 // ---------------------------------------------------------------- choosing
+
+// Language buttons on the first screen. Picking one applies it straight away,
+// then the rest of setup follows in that language.
+function renderLangs() {
+  const box = $("langs");
+  if (!box) return;
+  box.textContent = "";
+  const active = DVL.i18n.language();
+  for (const [code, name] of LANGS) {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "lang-btn";
+    b.textContent = name;
+    b.setAttribute("aria-pressed", String(active === code));
+    b.addEventListener("click", async () => {
+      await api.storage.local.set({ language: code });
+      DVL.i18n.setLanguage(code);
+      DVL.i18n.apply(document);
+      renderLangs();
+      renderTips();
+      renderChoose();
+    });
+    box.append(b);
+  }
+}
+
 
 function chosenHosts() {
   return [...new Set([...DVL.collections.hostsFor([...picked]), ...custom])].filter((h) => !S.sites.includes(h));
@@ -204,6 +234,7 @@ $("close").addEventListener("click", () => window.close());
   S = await api.storage.local.get({ passHash: null, sites: [], onboarded: false, language: "auto" });
   DVL.i18n.setLanguage(S.language);
   DVL.i18n.apply(document);
+  renderLangs();
   renderTips();
   renderChoose();
   if (S.passHash && S.onboarded) go("ready");
