@@ -70,7 +70,7 @@ npm run installer    # run Soteria Setup from source
 
 ## Support
 
-Soteria is free and kept going by donations. If it helps you, please consider supporting it: _donation link here_. Questions and ideas: _contact link here_.
+Soteria is free and kept going by donations. If it helps you, please consider supporting it: [Patreon](https://www.patreon.com/cw/DrSkyle/membership). Questions and ideas: _contact link here_.
 
 ## License
 

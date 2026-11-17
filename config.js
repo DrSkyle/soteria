@@ -9,7 +9,7 @@
   const DVL = (root.DevilabsSoteria = root.DevilabsSoteria || {});
   DVL.config = Object.freeze({
     supportUrl: "https://www.patreon.com/cw/DrSkyle/membership",
-    sourceUrl: "",
+    sourceUrl: "https://github.com/DrSkyle/soteria",
     partnerUrl: "",
   });
 })(typeof globalThis !== "undefined" ? globalThis : this);
