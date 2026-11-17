@@ -6,9 +6,10 @@
 const api = typeof browser !== "undefined" ? browser : chrome;
 const DVL = globalThis.DevilabsSoteria;
 const L = DVL.logic;
+const CONFIG = DVL.config || { supportUrl: "" };
 const $ = (id) => document.getElementById(id);
 
-const el = { status: $("status"), kicker: $("kicker"), host: $("host"), state: $("state"), primary: $("primary"), lockAll: $("lock-all"), settings: $("settings") };
+const el = { status: $("status"), kicker: $("kicker"), host: $("host"), state: $("state"), primary: $("primary"), lockAll: $("lock-all"), settings: $("settings"), support: $("support") };
 let tab = null;
 let host = "";
 let S = null;
@@ -120,6 +121,12 @@ el.lockAll.addEventListener("click", async () => {
 });
 
 el.settings.addEventListener("click", () => openPage("options.html"));
+el.support.hidden = !CONFIG.supportUrl;
+el.support.addEventListener("click", () => {
+  if (!CONFIG.supportUrl) return;
+  api.tabs.create({ url: CONFIG.supportUrl });
+  window.close();
+});
 
 async function load() {
   S = await api.storage.local.get({ sites: [], passHash: null, habits: {}, brain: null, customList: [], firstActive: 0, alerts: [], language: "auto" });
