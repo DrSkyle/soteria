@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Soteria</title>
+  <link rel="icon" href="icons/icon-32.png">
+  <link rel="stylesheet" href="guard.css">
+</head>
+<body>
+  <main class="box">
+    <img class="avatar" src="icons/avatar-96.png" alt="">
+    <h1 id="title">Extensions are locked</h1>
+    <p class="muted" id="sub">Enter your Soteria password to open the extensions page.</p>
+    <form id="form" novalidate>
+      <input type="password" id="input" placeholder="Password" aria-label="Password" autocomplete="off">
+      <button type="submit" class="primary">Continue</button>
+    </form>
+    <div id="partner" hidden>
+      <button type="button" class="link" id="ask">Ask partner instead</button>
+      <div id="reqbox" hidden>
+        <textarea id="req" rows="3" readonly aria-label="Request to send to your partner"></textarea>
+        <button type="button" class="link" id="copy">Copy request</button>
+      </div>
+    </div>
+    <p class="msg" id="msg" role="status" aria-live="polite"></p>
+    <button type="button" class="link" id="leave">Close this tab</button>
+  </main>
+  <script src="logic.js"></script>
+  <script src="guard.js"></script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+/* Soteria by DrSkyle: popup */
+body { width: 320px; }
+.pop { padding: 18px 18px 12px; }
+.pop-head { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+.pop-head .avatar { width: 36px; height: 36px; }
+.pop-site { margin-bottom: 16px; min-height: 84px; }
+.pop-host { margin: 2px 0 4px; font: 600 22px/1.2 var(--font-display); letter-spacing: -0.015em; overflow-wrap: anywhere; }
+#state.ok { color: var(--ok); font-weight: 600; }
+.pop-actions { display: flex; flex-direction: column; gap: 8px; }
+.pop-foot { display: flex; align-items: center; justify-content: space-between; margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--line); min-height: 38px; }
+
+.warn { color: #c2410c; font-weight: 500; margin-top: 6px; }
+@media (prefers-color-scheme: dark) { .warn { color: #fb923c; } }
+.pop-insight { margin: 10px 2px 0; line-height: 1.4; }
+
+.pop-offer { margin: 12px 2px 0; font-size: 12px; line-height: 1.45; }
+.pop-offer .link { background: none; border: 0; padding: 0; font: inherit; color: inherit; text-decoration: underline; cursor: pointer; }
+.pop-offer .link.muted { opacity: .6; margin-left: 6px; }

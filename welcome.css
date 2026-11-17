@@ -1,0 +1,27 @@
+/* Soteria by DrSkyle: welcome */
+body { min-height: 100vh; }
+.wel { max-width: 460px; min-height: 100vh; margin: 0 auto; padding: 56px 24px 32px; display: flex; flex-direction: column; }
+.dots { display: flex; justify-content: center; gap: 8px; margin: 0 0 40px; padding: 0; list-style: none; }
+.dots li { width: 7px; height: 7px; border-radius: 50%; background: var(--fill-2); transition: background var(--ease), transform var(--ease); }
+.dots li.on { background: var(--accent); transform: scale(1.25); }
+.step { display: flex; flex-direction: column; align-items: stretch; justify-content: center; flex: 1; padding-bottom: 40px; }
+.step .avatar.lg { align-self: center; margin-bottom: 20px; }
+.step h1 { text-align: center; margin-bottom: 12px; outline: none; }
+.lede { text-align: center; color: var(--text-2); font-size: 15px; line-height: 1.5; margin: 0 auto 28px; max-width: 38ch; }
+.points { list-style: none; margin: 0 0 32px; padding: 0; display: flex; flex-direction: column; gap: 10px; align-self: center; }
+.points li { position: relative; padding-left: 24px; }
+.points li::before { content: ""; position: absolute; left: 4px; top: 7px; width: 5px; height: 9px; border: solid var(--accent); border-width: 0 2px 2px 0; transform: rotate(40deg); }
+.step .btn.block + .btn.block { margin-top: 8px; }
+.tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+.tile { text-align: left; padding: 12px 14px; border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--surface); cursor: pointer; transition: border-color var(--ease), background var(--ease); }
+.tile:hover { background: var(--fill); }
+.tile[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-tint); }
+.tile:disabled { opacity: 0.5; cursor: not-allowed; }
+.tile .headline { display: block; }
+.tile .caption { display: block; color: var(--text-2); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0 0; }
+#choose-msg { margin-bottom: 8px; }
+.tips { margin: 0 0 28px; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 14px; }
+.tips li { padding: 14px 16px; border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--surface); line-height: 1.5; }
+kbd { padding: 1px 6px; border-radius: 5px; background: var(--fill); font: 600 12px var(--font); white-space: nowrap; }
+.made { margin-top: auto; padding-top: 32px; text-align: center; font-size: 12px; color: var(--text-2); }

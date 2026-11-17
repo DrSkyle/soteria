@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Soteria</title>
+  <link rel="stylesheet" href="ui.css">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <main class="pop">
+    <header class="pop-head">
+      <img class="avatar" src="icons/avatar-48.png" alt="">
+      <div>
+        <p class="headline">Soteria</p>
+        <p class="caption muted" id="status">&nbsp;</p>
+      </div>
+    </header>
+
+    <section class="pop-site" aria-live="polite">
+      <p class="caption muted" id="kicker">This site</p>
+      <p class="pop-host" id="host">&nbsp;</p>
+      <p class="caption" id="state">&nbsp;</p>
+      <p class="caption warn" id="warn" hidden></p>
+    </section>
+
+    <p class="caption muted pop-insight" id="insight"></p>
+
+
+    <div class="pop-actions">
+      <button class="btn primary block" id="primary" hidden></button>
+      <button class="btn block" id="lock-all" data-i18n="pop.lockAll">Lock everything now</button>
+    </div>
+
+    <footer class="pop-foot">
+      <span></span>
+      <button class="btn plain small" id="settings" data-i18n="pop.settings">Settings</button>
+    </footer>
+  </main>
+
+  <script src="logic.js"></script>
+  <script src="locales.js"></script>
+  <script src="i18n.js"></script>
+  <script src="insight.js"></script>
+  <script src="brain.js"></script>
+  <script src="ask.js"></script>
+  <script src="threats.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

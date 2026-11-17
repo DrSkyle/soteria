@@ -1,0 +1,400 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Soteria Settings</title>
+  <link rel="stylesheet" href="ui.css">
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <div class="gate" id="gate" role="dialog" aria-modal="true" aria-labelledby="gate-title" hidden>
+    <div class="gate-box">
+      <img class="avatar lg" src="icons/avatar-96.png" alt="">
+      <h2 class="title" id="gate-title">Settings are locked</h2>
+      <p class="muted">Enter your password to continue.</p>
+      <form id="gate-form">
+        <div class="gate-field">
+          <input type="password" id="gate-input" placeholder="Password" aria-label="Password" autocomplete="new-password">
+          <button type="submit" aria-label="Unlock">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13m-5-6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+        <p class="msg" id="gate-msg" role="status" aria-live="polite"></p>
+      </form>
+      <button type="button" class="gate-link" id="forgot">Forgot your password?</button>
+      <div class="gate-reset" id="reset" hidden>
+        <p class="muted" id="reset-text"></p>
+        <div class="gate-newpw" id="reset-new" hidden>
+          <input type="password" id="reset-pw" placeholder="New password (8+ characters)" aria-label="New password" autocomplete="new-password">
+          <input type="password" id="reset-pw2" placeholder="Repeat it" aria-label="Repeat new password" autocomplete="new-password">
+          <button type="button" class="btn primary small" id="reset-set">Set new password</button>
+        </div>
+        <div class="actions"><button type="button" class="btn small" id="reset-start">Start the 24-hour wait</button><button type="button" class="btn small" id="reset-partner" hidden>Ask my partner</button></div>
+        <p class="msg" id="reset-msg" role="status" aria-live="polite"></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="shell" id="shell">
+    <aside class="side">
+      <div class="side-head">
+        <img class="avatar" id="mark" src="icons/avatar-96.png" alt="">
+        <div>
+          <h1 class="headline">Soteria</h1>
+          <p class="caption muted" id="mood"></p>
+        </div>
+      </div>
+      <nav class="nav" id="nav" aria-label="Settings sections">
+        <button type="button" data-panel="home">Home<span class="dot" id="home-dot" hidden></span></button>
+        <button type="button" data-panel="sites">Sites</button>
+        <button type="button" data-panel="security">Security</button>
+        <button type="button" data-panel="schedule">Schedule</button>
+        <button type="button" data-panel="insights">Insights<span class="dot" id="nav-dot" hidden></span></button>
+        <button type="button" data-panel="activity">Activity</button>
+        <button type="button" data-panel="data">Data</button>
+        <button type="button" data-panel="support" id="nav-support">Support</button>
+      </nav>
+      <div class="side-foot">
+        <p class="caption muted">Made by DrSkyle</p>
+      </div>
+    </aside>
+
+    <main class="main">
+      <!-- Home -->
+      <section class="panel" id="panel-home">
+        <h2 class="sr-only">Home</h2>
+        <div class="hero">
+          <p class="hero-num" id="home-num">0</p>
+          <p class="hero-label" id="home-label">days without unlocking</p>
+          <p class="hero-line muted" id="home-outlook"></p>
+        </div>
+        <div class="group" id="home-support" hidden>
+          <div class="row-body stack">
+            <p class="row-title">Soteria is free, and always will be.</p>
+            <p class="muted">No ads, no account, nothing leaves your device. If it has helped you, a small donation keeps it going.</p>
+            <div class="actions"><button class="btn primary small" type="button" id="home-support-go">Support Soteria</button><button class="btn small" type="button" id="home-support-hide">Not now</button></div>
+          </div>
+        </div>
+        <h3 class="group-title" id="week-title">Your week</h3>
+        <div class="group week" id="week-card">
+          <div class="row-body stack">
+            <p class="week-head" id="week-head"></p>
+            <div class="week-stats" id="week-stats"></div>
+            <div id="week-chart"></div>
+            <div id="week-text"></div>
+            <div id="week-reasons" class="week-reasons"></div>
+            <p class="week-next" id="week-next" hidden></p>
+            <p class="week-next" id="week-hint" hidden></p>
+            <p class="muted" id="week-send-msg" role="status" aria-live="polite"></p>
+            <div class="actions"><button class="btn small" type="button" id="week-copy">Copy summary</button><button class="btn small" type="button" id="week-image">Save as image</button><button class="btn small" type="button" id="week-send" hidden>Send to my partner</button></div>
+          </div>
+        </div>
+        <h3 class="group-title">Next step</h3>
+        <div class="group" id="home-next"></div>
+        <h3 class="group-title">Last 14 days</h3>
+        <div class="group"><div class="row-body stack" id="home-chart"></div></div>
+        <h3 class="group-title">Ask Soteria</h3>
+        <form class="group" id="ask-form" novalidate>
+          <div class="row-body stack">
+            <input class="input" type="text" id="ask-input" placeholder="Ask about today, your streak, when you slip, what to change" aria-label="Ask Soteria" autocomplete="off" maxlength="120">
+            <p class="muted" id="ask-answer" role="status" aria-live="polite"></p>
+          </div>
+        </form>
+        <div class="actions"><button class="btn small" type="button" id="home-lock">Lock everything now</button></div>
+      </section>
+
+      <!-- Sites -->
+      <section class="panel" id="panel-sites" hidden>
+        <h2 class="title">Sites</h2>
+        <p class="lede muted">Pages on these sites are blurred and locked until you enter your password.</p>
+        <form class="field-row" id="add-form">
+          <input class="input" type="text" id="site-input" placeholder="example.com" aria-label="Add a site" autocomplete="off" autocapitalize="off" spellcheck="false">
+          <button class="btn primary" type="submit">Add</button>
+          <button class="btn" type="button" id="open-collections">Collections</button>
+          <button class="btn" type="button" id="open-share">Share or import a list</button>
+        </form>
+        <p class="msg" id="site-msg" role="status" aria-live="polite"></p>
+        <div id="site-list"></div>
+        <p class="empty muted" id="site-empty">No sites yet. Add one above, or start from a collection.</p>
+      </section>
+
+      <!-- Security -->
+      <section class="panel" id="panel-security" hidden>
+        <h2 class="title">Security</h2>
+        <h3 class="group-title">Password</h3>
+        <form class="group" id="pw-form" novalidate>
+          <div class="row-body stack">
+            <p class="muted" id="pw-status"></p>
+            <input class="input" type="password" id="pw-current" placeholder="Current password" aria-label="Current password" autocomplete="current-password" hidden>
+            <input class="input" type="password" id="pw-new" placeholder="New password" aria-label="New password" autocomplete="new-password">
+            <div class="strength" aria-hidden="true"><div class="strength-track"><div class="strength-fill" id="strength-fill"></div></div><span class="strength-label" id="strength-label"></span></div>
+            <input class="input" type="password" id="pw-confirm" placeholder="Confirm new password" aria-label="Confirm new password" autocomplete="new-password">
+            <p class="msg" id="pw-msg" role="status" aria-live="polite"></p>
+            <div><button class="btn primary" type="submit" id="pw-save">Save password</button></div>
+          </div>
+        </form>
+
+        <h3 class="group-title">Lock screen</h3>
+        <div class="group">
+          <label class="row">
+            <span class="row-text">
+              <span class="row-title">Disguise the lock screen</span>
+              <span class="row-sub">Shows a plain browser error with no password field. Unlock by typing <code>soteria("password")</code> in the page's developer console.</span>
+            </span>
+            <input type="checkbox" class="switch" role="switch" id="disguise">
+          </label>
+          <label class="row">
+            <span class="row-text">
+              <span class="row-title">Longest unlock</span>
+              <span class="row-sub">When you unlock a site you choose how long you are staying: 5, 15, 30 minutes, or "While I'm here", which lasts until you stop using the site for this long. This is the longest you can choose. Closing and reopening the tab does not ask again.</span>
+            </span>
+            <select class="select" id="remember">
+              <option value="0">Always ask</option><option value="5">5 minutes</option><option value="15">15 minutes</option><option value="30">30 minutes</option><option value="60">1 hour</option><option value="240">4 hours</option>
+            </select>
+          </label>
+          <label class="row">
+            <span class="row-text">
+              <span class="row-title">Lock a site again after leaving its tab</span>
+              <span class="row-sub">Applies once the tab has been in the background this long.</span>
+            </span>
+            <select class="select" id="autorelock">
+              <option value="0">Never</option><option value="1">1 minute</option><option value="5">5 minutes</option><option value="15">15 minutes</option><option value="30">30 minutes</option>
+            </select>
+          </label>
+          <label class="row">
+            <span class="row-text">
+              <span class="row-title">Lock everything when I step away</span>
+              <span class="row-sub">When your computer goes idle or the screen locks for this long.</span>
+            </span>
+            <select class="select" id="idlerelock">
+              <option value="0">Off</option><option value="1">1 minute</option><option value="5">5 minutes</option><option value="15">15 minutes</option>
+            </select>
+          </label>
+        </div>
+
+        <h3 class="group-title">Language</h3>
+        <div class="group">
+          <label class="row">
+            <span class="row-text">
+              <span class="row-title">Language</span>
+              <span class="row-sub">Used on the lock screen, the toolbar popup and first-run setup. Settings are still in English for now.</span>
+            </span>
+            <select class="select" id="language" aria-label="Language"></select>
+          </label>
+        </div>
+
+        <h3 class="group-title">Protect Soteria from removal</h3>
+        <div class="group">
+          <label class="row">
+            <span class="row-text">
+              <span class="row-title">Ask for my password before the extensions page opens</span>
+              <span class="row-sub">Makes the browser's extensions page (where Soteria could be removed) ask for your password first. It needs permission to see the address of your tabs, which Soteria only uses for this and never stores. Be aware: the browser's right-click "Remove" on the toolbar icon can't be blocked by any extension. This makes removing Soteria slower, not impossible.</span>
+            </span>
+            <input type="checkbox" class="switch" role="switch" id="guard-ext">
+          </label>
+        </div>
+
+        <h3 class="group-title">Accountability partner</h3>
+        <div class="group">
+          <div class="row-body stack">
+            <p class="muted">Pick someone you trust. At hard moments Soteria asks them to approve instead of you. They don't need Soteria: they use a small page. Nothing goes through any server; you pass short codes by message.</p>
+            <div id="partner-setup" class="stack">
+              <textarea class="input" id="partner-code" rows="3" spellcheck="false" aria-label="Your partner's code" placeholder="Paste your partner's code (starts with SOTERIAKEY1)"></textarea>
+              <input class="input" type="text" id="partner-name" maxlength="30" placeholder="Their name (optional)" autocomplete="off">
+              <div class="actions"><button class="btn primary small" type="button" id="partner-save">Save partner</button><button class="btn small" type="button" id="partner-page">Send them the partner page</button></div>
+            </div>
+            <div id="partner-active" class="stack" hidden>
+              <p class="row-title" id="partner-who"></p>
+              <label class="field"><span class="row-title">Your name, shown to your partner on weekly check-ins</span><input class="input" type="text" id="owner-name" maxlength="30" autocomplete="off"></label>
+              <label class="row">
+                <span class="row-text">
+                  <span class="row-title">Only my partner can unlock during quiet hours</span>
+                  <span class="row-sub">Your own password stops working then, including for settings. Needs quiet hours turned on under Schedule. Turning this off, or changing quiet hours, needs your partner's approval.</span>
+                </span>
+                <input type="checkbox" class="switch" role="switch" id="partner-only">
+              </label>
+              <div class="actions"><button class="btn danger small" type="button" id="partner-remove">Remove partner</button></div>
+            </div>
+            <p class="muted" id="partner-msg" role="status" aria-live="polite"></p>
+          </div>
+        </div>
+        <p class="caption muted note">Panic key: press <kbd id="panic-keys">Ctrl + Shift + L</kbd> to lock every protected site in every tab at once. You can change the shortcut in your browser's extension settings.</p>
+      </section>
+
+      <!-- Schedule -->
+      <section class="panel" id="panel-schedule" hidden>
+        <h2 class="title">Schedule</h2>
+        <p class="lede muted">During sanctuary hours every protected site stays locked. A snooze won't open it, and an unlock from earlier doesn't carry over. Only your password does.</p>
+        <div class="group" id="schedule-group">
+          <label class="row">
+            <span class="row-text"><span class="row-title">Sanctuary hours</span></span>
+            <input type="checkbox" class="switch" role="switch" id="sanctuary">
+          </label>
+          <div class="row-body stack">
+            <div class="time-row">
+              <label class="muted" for="sanc-start">From</label>
+              <input class="input" type="time" id="sanc-start">
+              <label class="muted" for="sanc-end">To</label>
+              <input class="input" type="time" id="sanc-end">
+            </div>
+            <div class="days" id="days" role="group" aria-label="Days"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Activity -->
+      <!-- Insights -->
+      <section class="panel" id="panel-insights" hidden>
+        <h2 class="title">Insights</h2>
+        <p class="lede muted" id="ins-headline"></p>
+        <div class="group">
+          <label class="row">
+            <span class="row-text">
+              <span class="row-title">Adapt to me</span>
+              <span class="row-sub">Soteria notices which hours you reach for protected sites. In harder moments it asks for a short pause and remembers unlocks for less time. It only keeps counts, on this device.</span>
+            </span>
+            <input type="checkbox" class="switch" role="switch" id="adaptive">
+          </label>
+        </div>
+        <h3 class="group-title">Your hours</h3>
+        <div class="group"><div class="row-body stack" id="ins-hours"></div></div>
+        <h3 class="group-title">What Soteria has noticed</h3>
+        <div class="group" id="ins-brain"></div>
+        <h3 class="group-title">Suggestions</h3>
+        <div class="group" id="ins-tips"></div>
+        <h3 class="group-title">Alerts</h3>
+        <div class="group" id="ins-alerts"></div>
+        <div class="actions"><button class="btn small" type="button" id="ins-seen">Mark alerts as seen</button><button class="btn danger small" type="button" id="ins-reset">Forget Soteria's patterns</button></div>
+        <h3 class="group-title">Your own warning list</h3>
+        <div class="group">
+          <div class="row-body stack">
+            <p class="muted">Add a list of risky domains you trust, such as a hosts file or a domain list from a project you follow. Soteria warns you when you visit anything on it. The file is read on this device and never uploaded. Lists keep their own licences, so check the one you choose.</p>
+            <p class="muted" id="list-status"></p>
+            <div class="actions"><input type="file" id="list-file" accept=".txt,.hosts,.list,text/plain" hidden><button class="btn small" type="button" id="list-pick">Choose a list</button><button class="btn danger small" type="button" id="list-clear" hidden>Remove list</button></div>
+          </div>
+        </div>
+        <p class="caption muted note" id="ins-threat"></p>
+      </section>
+
+
+      <!-- Activity -->
+      <section class="panel" id="panel-activity" hidden>
+        <h2 class="title">Activity</h2>
+        <div class="group">
+          <div class="row"><span class="row-title">Blocked attempts, last 7 days</span><span class="stat" id="stat-attempts">0</span></div>
+          <div class="row"><span class="row-title">Time on protected sites today</span><span class="stat" id="stat-time">0 min</span></div>
+        </div>
+        <h3 class="group-title">Last 14 days</h3>
+        <div class="group"><div class="row-body stack" id="charts"></div></div>
+        <h3 class="group-title">Today</h3>
+        <div class="group" id="today-list"></div>
+        <h3 class="group-title">Recent attempts</h3>
+        <div class="group" id="attempt-list"></div>
+        <div class="actions"><button class="btn danger small" type="button" id="clear-log">Clear activity log</button></div>
+      </section>
+
+      <!-- Data -->
+      <section class="panel" id="panel-data" hidden>
+        <h2 class="title">Data</h2>
+        <h3 class="group-title">Backup</h3>
+        <div class="group">
+          <div class="row">
+            <span class="row-text"><span class="row-title">Export a backup</span><span class="row-sub">Your sites, settings and password hash in one file. It never contains your password.</span></span>
+            <button class="btn" type="button" id="export">Export</button>
+          </div>
+          <div class="row">
+            <span class="row-text"><span class="row-title">Import a backup</span><span class="row-sub">Replaces your current setup. You'll be asked to approve each site again.</span></span>
+            <button class="btn" type="button" id="import">Import</button>
+            <input type="file" id="import-file" accept="application/json" hidden>
+          </div>
+        </div>
+        <p class="msg" id="backup-msg" role="status" aria-live="polite"></p>
+
+        <h3 class="group-title">A private note</h3>
+        <div class="group"><div class="row-body"><textarea class="textarea" id="note" rows="4" aria-label="Private note" placeholder="Anything you want to keep here. It never leaves this browser."></textarea><p class="msg" id="note-msg" role="status"></p></div></div>
+
+        <h3 class="group-title">Reset</h3>
+        <div class="group">
+          <div class="row">
+            <span class="row-text"><span class="row-title">Erase all data</span><span class="row-sub">Removes your password, sites and settings from this browser. This can't be undone.</span></span>
+            <button class="btn danger" type="button" id="erase">Erase…</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Support -->
+      <section class="panel" id="panel-support" hidden>
+        <h2 class="title">Support Soteria</h2>
+        <p class="lede muted">Soteria is free and open source (MIT). No ads, no account, and nothing leaves your device. It is built and kept going by donations. If it helps you, a small one means a lot.</p>
+        <div class="group"><div class="row-body stack">
+          <div class="actions"><button class="btn primary" type="button" id="support-donate" hidden>Support Soteria</button><button class="btn" type="button" id="support-source" hidden>View the source</button></div>
+        </div></div>
+      </section>
+    </main>
+  </div>
+
+  <dialog class="sheet" id="collections" aria-labelledby="col-title">
+    <div class="sheet-head">
+      <h2 class="title" id="col-title">Collections</h2>
+      <p class="muted">Protect a whole category at once. You'll be asked once to approve them.</p>
+    </div>
+    <div class="sheet-body" id="col-list"></div>
+    <div class="sheet-foot">
+      <button class="btn" type="button" id="col-cancel">Cancel</button>
+      <button class="btn primary" type="button" id="col-add" disabled>Add sites</button>
+    </div>
+  </dialog>
+
+  <dialog class="sheet" id="approve" aria-labelledby="approve-title">
+    <div class="sheet-head">
+      <h2 class="title" id="approve-title">Ask your partner</h2>
+      <p class="muted">Send this request to your partner. Paste their reply to go ahead.</p>
+    </div>
+    <div class="sheet-body stack">
+      <textarea class="input" id="approve-req" rows="3" readonly spellcheck="false" aria-label="Request to send to your partner"></textarea>
+      <div class="actions"><button class="btn small" type="button" id="approve-copy">Copy request</button></div>
+      <textarea class="input" id="approve-reply" rows="3" spellcheck="false" aria-label="Your partner's reply" placeholder="Paste their reply (starts with SOTERIAOK1)"></textarea>
+      <p class="muted" id="approve-msg" role="status" aria-live="polite"></p>
+    </div>
+    <div class="sheet-foot">
+      <button class="btn" type="button" id="approve-unreachable">I can't reach my partner</button>
+      <button class="btn" type="button" id="approve-cancel">Cancel</button>
+      <button class="btn primary" type="button" id="approve-go">Approve</button>
+    </div>
+  </dialog>
+
+  <dialog class="sheet" id="share" aria-labelledby="share-title">
+    <div class="sheet-head">
+      <h2 class="title" id="share-title">Share or import a list</h2>
+      <p class="muted">A code is the whole list in a few words of text. Send it to a friend, and they paste it here. Nothing is uploaded.</p>
+    </div>
+    <div class="sheet-body stack">
+      <label class="field"><span class="row-title">Name your list</span><input class="input" type="text" id="share-name" maxlength="40" placeholder="Study mode" autocomplete="off"></label>
+      <div class="actions"><button class="btn small" type="button" id="share-make">Make a code from my sites</button></div>
+      <textarea class="input" id="share-code" rows="4" spellcheck="false" aria-label="Soteria code" placeholder="Paste a code here to import it, or make one above"></textarea>
+      <p class="muted" id="share-msg" role="status" aria-live="polite"></p>
+    </div>
+    <div class="sheet-foot">
+      <button class="btn" type="button" id="share-close">Close</button>
+      <button class="btn" type="button" id="share-copy">Copy code</button>
+      <button class="btn primary" type="button" id="share-import" disabled>Import</button>
+    </div>
+  </dialog>
+
+  <script src="logic.js"></script>
+  <script src="locales.js"></script>
+  <script src="insight.js"></script>
+  <script src="brain.js"></script>
+  <script src="ask.js"></script>
+  <script src="summary.js"></script>
+  <script src="card.js"></script>
+  <script src="partner.js"></script>
+  <script src="threats.js"></script>
+  <script src="password.js"></script>
+  <script src="collections.js"></script>
+  <script src="mood.js"></script>
+  <script src="config.js"></script>
+  <script src="options.js"></script>
+</body>
+</html>

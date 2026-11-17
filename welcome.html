@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Welcome to Soteria</title>
+  <link rel="stylesheet" href="ui.css">
+  <link rel="stylesheet" href="welcome.css">
+</head>
+<body>
+  <main class="wel">
+    <ol class="dots" id="dots" data-i18n-attr="aria-label=wel.dots" aria-label="Setup progress">
+      <li></li><li></li><li></li><li></li>
+    </ol>
+
+    <section class="step" data-step="welcome">
+      <img class="avatar lg" src="icons/avatar-96.png" alt="">
+      <h1 class="title-lg" tabindex="-1">Soteria</h1>
+      <p class="lede" data-i18n="wel.lede">Blur and lock the sites you choose. Only your password opens them.</p>
+      <ul class="points">
+        <li data-i18n="wel.p1">Nothing ever leaves your device.</li>
+        <li data-i18n="wel.p2">No account. No tracking.</li>
+        <li data-i18n="wel.p3">Works on every site you add.</li>
+      </ul>
+      <button class="btn primary block" id="start" data-i18n="wel.start">Get started</button>
+    </section>
+
+    <section class="step" data-step="password" hidden>
+      <h1 class="title-lg" tabindex="-1" data-i18n="wel.pw.title">Create a password</h1>
+      <p class="lede" data-i18n="wel.pw.lede">You'll use it to unlock protected sites and to open settings. If you forget it, there is a 24-hour wait before you can set a new one, so choose something you'll remember.</p>
+      <form class="stack" id="pw-form" novalidate>
+        <input class="input" type="password" id="pw-new" data-i18n-attr="placeholder=wel.pw.placeholder;aria-label=wel.pw.placeholder" placeholder="Password" aria-label="Password" autocomplete="new-password">
+        <div class="strength" aria-hidden="true"><div class="strength-track"><div class="strength-fill" id="strength-fill"></div></div><span class="strength-label" id="strength-label"></span></div>
+        <input class="input" type="password" id="pw-confirm" data-i18n-attr="placeholder=wel.pw.confirm;aria-label=wel.pw.confirm" placeholder="Confirm password" aria-label="Confirm password" autocomplete="new-password">
+        <button class="btn plain small" type="button" id="pw-toggle" aria-pressed="false" aria-controls="pw-new pw-confirm" data-i18n="wel.pw.show">Show</button>
+        <p class="msg" id="pw-msg" role="status" aria-live="polite"></p>
+        <button class="btn primary block" type="submit" id="pw-go" data-i18n="wel.pw.continue">Continue</button>
+      </form>
+    </section>
+
+    <section class="step" data-step="choose" hidden>
+      <h1 class="title-lg" tabindex="-1" data-i18n="wel.choose.title">Choose what to protect</h1>
+      <p class="lede" data-i18n="wel.choose.lede">Start with a collection or add your own. You can change this any time.</p>
+      <div class="tiles" id="tiles"></div>
+      <form class="field-row" id="custom-form">
+        <input class="input" type="text" id="custom" data-i18n-attr="placeholder=wel.custom.placeholder;aria-label=wel.custom.placeholder" placeholder="Add a site, like example.com" aria-label="Add a site" autocomplete="off" autocapitalize="off" spellcheck="false">
+        <button class="btn" type="submit" data-i18n="wel.custom.add">Add</button>
+      </form>
+      <div class="chips" id="chosen" aria-live="polite"></div>
+      <p class="msg" id="choose-msg" role="status" aria-live="polite"></p>
+      <button class="btn primary block" id="protect"></button>
+      <button class="btn plain block" id="skip" data-i18n="wel.skip">Skip for now</button>
+    </section>
+
+    <section class="step" data-step="done" hidden>
+      <h1 class="title-lg" tabindex="-1" id="done-title" data-i18n="wel.done.title">You're all set</h1>
+      <p class="lede" id="done-lede" data-i18n="wel.done.lede">Soteria locks your sites whenever you open them.</p>
+      <ul class="tips">
+        <li data-tip="wel.tip.stay"></li>
+        <li data-tip="wel.tip.panic"></li>
+        <li data-tip="wel.tip.week"></li>
+        <li data-tip="wel.tip.partner"></li>
+      </ul>
+      <details class="more">
+        <summary data-i18n="wel.more">More tips</summary>
+        <ul class="tips">
+          <li data-tip="wel.tip.private"></li>
+          <li data-tip="wel.tip.pin"></li>
+        </ul>
+      </details>
+      <button class="btn primary block" id="open-settings" data-i18n="wel.settings">Open settings</button>
+      <button class="btn plain block" id="close" data-i18n="wel.close">Close</button>
+    </section>
+
+    <section class="step" data-step="ready" hidden>
+      <img class="avatar lg" src="icons/avatar-96.png" alt="">
+      <h1 class="title-lg" tabindex="-1" data-i18n="wel.ready.title">Soteria is set up</h1>
+      <p class="lede" data-i18n="wel.ready.lede">Manage your sites and options in settings. You'll be asked for your password.</p>
+      <button class="btn primary block" id="ready-settings" data-i18n="wel.settings">Open settings</button>
+    </section>
+
+    <footer class="made" data-i18n="wel.made">Made by DrSkyle</footer>
+  </main>
+
+  <script src="logic.js"></script>
+  <script src="locales.js"></script>
+  <script src="i18n.js"></script>
+  <script src="password.js"></script>
+  <script src="collections.js"></script>
+  <script src="welcome.js"></script>
+</body>
+</html>
