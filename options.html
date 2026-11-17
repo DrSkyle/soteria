@@ -53,6 +53,7 @@
         <button type="button" data-panel="insights">Insights<span class="dot" id="nav-dot" hidden></span></button>
         <button type="button" data-panel="activity">Activity</button>
         <button type="button" data-panel="data">Data</button>
+        <button type="button" data-panel="transparency">Transparency</button>
         <button type="button" data-panel="support" id="nav-support">Support</button>
       </nav>
       <div class="side-foot">
@@ -321,6 +322,18 @@
             <button class="btn danger" type="button" id="erase">Erase…</button>
           </div>
         </div>
+      </section>
+
+      <!-- Transparency -->
+      <section class="panel" id="panel-transparency" hidden>
+        <h2 class="title">Transparency</h2>
+        <p class="lede muted">Everything Soteria knows about you, in plain language. It only knows the sites you protect, not the rest of your browsing. This is the entire database. There is no other copy.</p>
+        <div class="actions">
+          <button class="btn small" type="button" id="trans-export">Export all (JSON)</button>
+          <button class="btn danger small" type="button" id="trans-erase">Erase all</button>
+        </div>
+        <p class="msg" id="trans-msg" role="status" aria-live="polite"></p>
+        <div id="trans-list"></div>
       </section>
 
       <!-- Support -->

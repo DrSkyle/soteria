@@ -45,6 +45,11 @@ body.gated .shell { filter: blur(24px); pointer-events: none; user-select: none;
 .note { margin: 12px 4px 0; max-width: 62ch; }
 .actions { margin-top: 14px; }
 .empty { margin-top: 18px; }
+.trans-row > summary { list-style: none; cursor: pointer; }
+.trans-row > summary::-webkit-details-marker { display: none; }
+.trans-row > summary::after { content: "›"; color: var(--text-2); transform: rotate(90deg); transition: transform var(--ease); }
+.trans-row[open] > summary::after { transform: rotate(-90deg); }
+.trans-pre { margin: 0 0 12px; padding: 10px 12px; border-radius: var(--r-lg); background: var(--fill); font: 12px/1.5 ui-monospace, "SF Mono", Menlo, Consolas, monospace; white-space: pre-wrap; word-break: break-word; max-height: 280px; overflow: auto; }
 .stat { font-weight: 600; font-variant-numeric: tabular-nums; }
 code { padding: 1px 5px; border-radius: 5px; background: var(--fill); font: 12px ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
 kbd { padding: 1px 6px; border-radius: 5px; background: var(--fill); font: 600 12px var(--font); white-space: nowrap; }

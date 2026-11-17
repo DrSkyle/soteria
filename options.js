@@ -79,6 +79,7 @@ function show(panel) {
   }
   if (panel === "activity") renderActivity();
   if (panel === "insights") renderInsights();
+  if (panel === "transparency") renderTransparency();
   if (panel === "home") renderHome();
 }
 
@@ -114,7 +115,7 @@ function closeGate() {
 
 // Nothing sensitive stays in the page while it's locked.
 function wipe() {
-  ["#site-list", "#today-list", "#attempt-list", "#charts", "#home-chart", "#home-next", "#week-head", "#week-stats", "#week-chart", "#week-text", "#week-reasons", "#week-next", "#week-hint", "#week-send-msg", "#home-outlook", "#ask-answer", "#ins-hours", "#ins-brain", "#ins-tips", "#ins-alerts", "#ins-headline", "#list-status", "#share-msg", "#partner-msg", "#approve-msg"].forEach((s) => ($(s).textContent = ""));
+  ["#site-list", "#today-list", "#attempt-list", "#charts", "#home-chart", "#home-next", "#week-head", "#week-stats", "#week-chart", "#week-text", "#week-reasons", "#week-next", "#week-hint", "#week-send-msg", "#home-outlook", "#ask-answer", "#ins-hours", "#ins-brain", "#ins-tips", "#ins-alerts", "#ins-headline", "#list-status", "#share-msg", "#partner-msg", "#approve-msg", "#trans-list", "#trans-msg"].forEach((s) => ($(s).textContent = ""));
   ["#note", "#ask-input", "#owner-name", "#reset-pw", "#reset-pw2", "#share-code", "#partner-code", "#partner-name", "#approve-req", "#approve-reply"].forEach((s) => ($(s).value = ""));
   $("#mood").textContent = "";
   $("#home-num").textContent = "";
@@ -1088,6 +1089,207 @@ $("#erase").addEventListener("click", async () => {
   location.href = api.runtime.getURL("welcome.html");
 });
 
+// --------------------------------------------------------- transparency
+
+const TRANS_GROUPS = [
+  ["What you protect", ["sites", "siteGroups", "allowances", "snoozes", "customList", "customListName"]],
+  ["Your password", ["passHash", "salt", "lockout", "resetAt"]],
+  ["Your schedule", ["sanctuaryEnabled", "sanctuaryStart", "sanctuaryEnd", "sanctuaryDays", "autoRelockMinutes", "idleRelockMinutes", "rememberMinutes", "disguise", "adaptive"]],
+  ["What Soteria noticed", ["firstActive", "habits", "brain", "usage", "usageDate", "extraTime", "usageDaily", "watchLog", "alerts", "dismissedTips", "summarySeen", "announcedMilestones"]],
+  ["Your partner", ["partner", "partnerOnlyQuiet", "asks", "partnerReleaseAt", "ownerName", "checkinSent"]],
+  ["This install", ["language", "guardExtensions", "manageUntil", "lockEpoch", "onboarded", "welcomeShown", "supportNoteSeen", "keepsakeNote"]],
+];
+
+const TRANS_DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+function prettyValue(v) {
+  try {
+    const s = JSON.stringify(v, null, 2);
+    return s === undefined ? String(v) : s;
+  } catch (e) {
+    return String(v);
+  }
+}
+
+function describeField(key, v) {
+  const entries = (o) => Object.entries(o || {});
+  const pairList = (o, fn) => {
+    const e = entries(o);
+    return e.length ? e.map(fn).join(", ") : "None";
+  };
+  switch (key) {
+    case "sites":
+      return { title: "Sites you protect", sub: Array.isArray(v) && v.length ? v.join(", ") : "None yet" };
+    case "siteGroups":
+      return { title: "Group names", sub: pairList(v, ([h, g]) => h + " → " + g) };
+    case "allowances":
+      return { title: "Daily limits", sub: pairList(v, ([h, m]) => h + " — " + m + " min/day") };
+    case "snoozes":
+      return { title: "Snoozes", sub: pairList(v, ([h, t]) => h + " until " + new Date(t).toLocaleString()) };
+    case "customList":
+      return { title: "Your warning list", sub: Array.isArray(v) && v.length ? v.length + " domains" : "Empty" };
+    case "customListName":
+      return { title: "Warning list name", sub: v || "—" };
+    case "passHash":
+      return { title: "Password hash", sub: v ? "PBKDF2-SHA256, 150,000 rounds. Your password itself is never stored." : "No password set" };
+    case "salt":
+      return { title: "Password salt", sub: v ? "Random and unique to this install." : "—" };
+    case "lockout": {
+      const l = v || {};
+      const until = l.until > Date.now() ? ", locked until " + new Date(l.until).toLocaleTimeString() : "";
+      return { title: "Wrong-password lockout", sub: (l.fails || 0) + " wrong tries" + until };
+    }
+    case "resetAt":
+      return { title: "Password reset wait", sub: v ? "Reset allowed at " + new Date(v).toLocaleString() : "No reset started" };
+    case "sanctuaryEnabled":
+      return { title: "Sanctuary hours", sub: v ? "On" : "Off" };
+    case "sanctuaryStart":
+      return { title: "Sanctuary starts", sub: v || "—" };
+    case "sanctuaryEnd":
+      return { title: "Sanctuary ends", sub: v || "—" };
+    case "sanctuaryDays":
+      return { title: "Sanctuary days", sub: Array.isArray(v) && v.length ? v.map((d) => TRANS_DAYS[d]).join(", ") : "—" };
+    case "autoRelockMinutes":
+      return { title: "Re-lock after background", sub: v ? v + " min" : "Off" };
+    case "idleRelockMinutes":
+      return { title: "Re-lock when idle", sub: v ? v + " min" : "Off" };
+    case "rememberMinutes":
+      return { title: "Remember unlocks", sub: v ? v + " min" : "Not remembered" };
+    case "disguise":
+      return { title: "Disguised lock screen", sub: v ? "On" : "Off" };
+    case "adaptive":
+      return { title: "Adaptive pauses", sub: v === false ? "Off" : "On" };
+    case "firstActive":
+      return { title: "First used", sub: v ? new Date(v).toLocaleString() : "—" };
+    case "habits":
+      return { title: "Usage counts", sub: entries(v).length ? entries(v).length + " sites tracked" : "Nothing recorded yet" };
+    case "brain":
+      return { title: "Patterns noticed", sub: v ? "From " + ((v.model && v.model.n) || 0) + " moments, on this device." : "Nothing noticed yet" };
+    case "usage":
+      return { title: "Time on protected sites today", sub: pairList(v, ([h, s]) => h + " — " + L.formatDuration(s)) };
+    case "usageDate":
+      return { title: "Usage day", sub: v || "—" };
+    case "extraTime":
+      return { title: "Extra time added today", sub: pairList(v, ([h, s]) => h + " — " + L.formatDuration(s)) };
+    case "usageDaily": {
+      const last = entries(v).sort().slice(-7);
+      return { title: "Daily totals", sub: last.length ? last.map(([d, s]) => d + " — " + L.formatDuration(s)).join(", ") : "None" };
+    }
+    case "watchLog": {
+      const n = Array.isArray(v) ? v.length : 0;
+      return { title: "Recent password attempts", sub: n ? n + " saved, newest " + new Date(v[n - 1].time).toLocaleString() : "None" };
+    }
+    case "alerts": {
+      const a = Array.isArray(v) ? v : [];
+      return { title: "Alerts", sub: a.length ? a.length + " total, " + a.filter((x) => !x.seen).length + " unseen" : "None" };
+    }
+    case "dismissedTips":
+      return { title: "Dismissed suggestions", sub: Array.isArray(v) && v.length ? v.length + " stored" : "None" };
+    case "summarySeen":
+      return { title: "Last weekly summary seen", sub: v || "—" };
+    case "announcedMilestones":
+      return { title: "Milestones announced", sub: Array.isArray(v) && v.length ? v.join(", ") : "None" };
+    case "partner":
+      return { title: "Accountability partner", sub: v ? (v.name || "Unnamed") + " · key ends " + String(v.key || "").slice(-6) : "None" };
+    case "partnerOnlyQuiet":
+      return { title: "Only partner during quiet hours", sub: v ? "On" : "Off" };
+    case "asks":
+      return { title: "Pending partner requests", sub: entries(v).length ? entries(v).length + " stored" : "None" };
+    case "partnerReleaseAt":
+      return { title: "Partner unlock wait", sub: v ? new Date(v).toLocaleString() : "—" };
+    case "ownerName":
+      return { title: "Your name for your partner", sub: v || "—" };
+    case "checkinSent":
+      return { title: "Last weekly check-in sent", sub: v || "—" };
+    case "language":
+      return { title: "Language", sub: v || "auto" };
+    case "guardExtensions":
+      return { title: "Password before extensions page", sub: v ? "On" : "Off" };
+    case "manageUntil":
+      return { title: "Extensions page unlocked until", sub: v ? new Date(v).toLocaleString() : "—" };
+    case "lockEpoch":
+      return { title: "Panic-lock counter", sub: String(v || 0) };
+    case "onboarded":
+      return { title: "Setup finished", sub: v ? "Yes" : "No" };
+    case "welcomeShown":
+      return { title: "Welcome opened", sub: v ? "Yes" : "No" };
+    case "supportNoteSeen":
+      return { title: "Support note seen", sub: v ? "Yes" : "No" };
+    case "keepsakeNote":
+      return { title: "Your private note", sub: v ? v.length + " characters" : "Empty" };
+    default: {
+      let sub;
+      if (Array.isArray(v)) sub = v.length + " items";
+      else if (v && typeof v === "object") sub = Object.keys(v).length + " entries";
+      else if (typeof v === "boolean") sub = v ? "On" : "Off";
+      else sub = String(v).slice(0, 120);
+      return { title: key.replace(/([A-Z])/g, " $1").replace(/^./, (c) => c.toUpperCase()), sub };
+    }
+  }
+}
+
+function transRow(key, value) {
+  const d = describeField(key, value);
+  const det = h("details", { class: "trans-row" });
+  det.append(
+    h("summary", { class: "row" }, [
+      h("span", { class: "row-text" }, [
+        h("span", { class: "row-title", text: d.title }),
+        h("span", { class: "row-sub muted", text: d.sub }),
+      ]),
+    ]),
+    h("pre", { class: "trans-pre", text: prettyValue(value) })
+  );
+  return det;
+}
+
+function renderTransparency() {
+  if (!unlocked) return;
+  const box = $("#trans-list");
+  box.textContent = "";
+  api.storage.local.get(null).then((data) => {
+    const keys = Object.keys(data).sort();
+    const used = new Set();
+    const head = h("p", { class: "caption muted", text: keys.length + " fields stored in this browser." });
+    box.append(head);
+    for (const [title, groupKeys] of TRANS_GROUPS) {
+      const present = groupKeys.filter((k) => k in data);
+      if (!present.length) continue;
+      const group = h("div", { class: "group" });
+      for (const k of present) {
+        group.append(transRow(k, data[k]));
+        used.add(k);
+      }
+      box.append(h("h3", { class: "group-title", text: title }), group);
+    }
+    const rest = keys.filter((k) => !used.has(k));
+    if (rest.length) {
+      const group = h("div", { class: "group" });
+      for (const k of rest) group.append(transRow(k, data[k]));
+      box.append(h("h3", { class: "group-title", text: "Other stored fields" }), group);
+    }
+  });
+}
+
+$("#trans-export").addEventListener("click", async () => {
+  const data = await api.storage.local.get(null);
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = h("a", { href: url, download: "soteria-everything-" + new Date().toISOString().slice(0, 10) + ".json" });
+  document.body.append(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 2000);
+  say($("#trans-msg"), "Exported " + Object.keys(data).length + " fields.", "ok");
+});
+
+$("#trans-erase").addEventListener("click", async () => {
+  if (!window.confirm("Erase everything Soteria has stored? This can't be undone.")) return;
+  if (S.partner && !(await requireApproval())) return;
+  await api.storage.local.clear();
+  location.href = api.runtime.getURL("welcome.html");
+});
+
 // ------------------------------------------------------------------ support
 
 function renderSupport() {
@@ -1163,6 +1365,7 @@ api.storage.onChanged.addListener(async (changes) => {
   const structural = keys.some((k) => SITE_KEYS.includes(k));
   const usageOnly = !structural && keys.some((k) => USAGE_KEYS.includes(k));
   for (const k of keys) S[k] = changes[k].newValue === undefined ? L.DEFAULTS[k] : changes[k].newValue;
+  if (!$("#panel-transparency").hidden) renderTransparency();
   if (usageOnly) {
     refreshMeta();
     if (!$("#panel-activity").hidden) renderActivity();
