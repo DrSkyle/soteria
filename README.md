@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="icons/icon-128.png" alt="Soteria icon" width="128" height="128">
+</p>
+
 # Soteria
 
 **A website blocker that learns you.**
